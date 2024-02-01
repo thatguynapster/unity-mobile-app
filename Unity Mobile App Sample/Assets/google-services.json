@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "141976472813",
+    "project_id": "unity-auth-5ae0f",
+    "storage_bucket": "unity-auth-5ae0f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141976472813:android:0ee627a7714731779650e4",
+        "android_client_info": {
+          "package_name": "com.thatGuyNapster.unityAuthFirebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARkcKYC497ZTXbq4RcICVPWWg25h5n5m0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
