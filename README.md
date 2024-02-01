@@ -20,12 +20,16 @@ The project was developed with the default Unity project structure, where scene 
 This holds all the scene files for the project, in this case the Ads scene and the Auth Scene.
 The Auth scene is where the user gets to login or create an account to access the app
 ![Login Page](image-1.png)
+
 ![Register Page](image-2.png)
+
 ![Screenshot of Register function](image-3.png)
 
 The Ads scene loads up after the user successfully signs in. There are two buttons; one to load a full screen ad and one to load a banner ad
 ![Ad Scene](image-4.png)
+
 ![Banner Ad (Bottom)](image-5.png)
+
 ![Full Screen Ad](image-6.png)
 
 ### Challenges Faced
