@@ -4,25 +4,9 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-
-    public static UIManager Instance;
-
     [SerializeField] private GameObject loginView;
 
     [SerializeField] private GameObject signUpView;
-
-    private void Awake()
-    {
-        CreateInstance();
-    }
-
-    private void CreateInstance()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
 
     public void OpenLoginView()
     {
@@ -35,5 +19,4 @@ public class UIManager : MonoBehaviour
         signUpView.SetActive(true);
         loginView.SetActive(false);
     }
-
 }

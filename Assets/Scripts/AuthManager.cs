@@ -10,6 +10,7 @@ using TMPro;
 
 public class AuthManager : MonoBehaviour
 {
+    public UIManager uIManager;
     // Firebase
     [Header("Friebase")]
     public DependencyStatus dependencyStatus;
@@ -131,6 +132,11 @@ public class AuthManager : MonoBehaviour
             user = loginTask.Result.User;
 
             Debug.LogFormat("{0} Login successful", user.Email);
+
+            // clear input fields
+            clearInput(loginEmail);
+            clearInput(loginPassword);
+
             SceneManager.LoadScene("Ads");
         }
     }
@@ -142,69 +148,78 @@ public class AuthManager : MonoBehaviour
 
     private IEnumerator RegisterAsync(string name, string email, string password, string confirmPassword)
     {
-        if (name == "")
+        if (string.IsNullOrEmpty(name))
         {
             Debug.LogError("Name is empty");
             errorMessage.text = "Name is empty";
+            yield break;
         }
-        else if (email == "")
+
+        if (string.IsNullOrEmpty(email))
         {
             errorMessage.text = "Email is empty";
+            yield break;
         }
-        else if (IsPasswordValid(password))
+
+        if (IsPasswordValid(password))
         {
             errorMessage.text = "Invalid password provided";
+            yield break;
         }
-        else if (password.Length <= 8)
+
+        if (password.Length <= 8)
         {
             errorMessage.text = "Password is too short";
+            yield break;
         }
-        else if (password != confirmPassword)
+
+        if (password != confirmPassword)
         {
             errorMessage.text = "Password does not match";
+            yield break;
+        }
+
+        var registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
+        yield return new WaitUntil(() => registerTask.IsCompleted);
+
+        if (registerTask.Exception != null)
+        {
+            Debug.LogError(registerTask.Exception);
+
+            FirebaseException firebaseException = registerTask.Exception.GetBaseException() as FirebaseException;
+            AuthError authError = (AuthError)firebaseException.ErrorCode;
+
+            string failureMessage = "Registration Failed! Reason: ";
+            switch (authError)
+            {
+                case AuthError.InvalidEmail:
+                    failureMessage += "Email is invalid";
+                    break;
+                case AuthError.WrongPassword:
+                    failureMessage += "Wrong password";
+                    break;
+                case AuthError.MissingEmail:
+                    failureMessage += "Email is missing";
+                    break;
+                case AuthError.MissingPassword:
+                    failureMessage += "Password is missing";
+                    break;
+                default:
+                    failureMessage = "Registration Failed";
+                    break;
+            }
+            errorMessage.text = failureMessage;
         }
         else
         {
-            var registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
-            yield return new WaitUntil(() => registerTask.IsCompleted);
+            Debug.Log("Registration successful. Welcome" + user.Email);
 
-            if (registerTask.Exception != null)
-            {
-                Debug.LogError(registerTask.Exception);
+            clearInput(SignupName);
+            clearInput(signupEmail);
+            clearInput(signupPassword);
+            clearInput(signupConfirmPassword);
 
-                FirebaseException firebaseException = registerTask.Exception.GetBaseException() as FirebaseException;
-                AuthError authError = (AuthError)firebaseException.ErrorCode;
-
-                string failureMessage = "Registration Failed! Reason: ";
-                switch (authError)
-                {
-                    case AuthError.InvalidEmail:
-                        failureMessage += "Email is invalid";
-                        break;
-                    case AuthError.WrongPassword:
-                        failureMessage += "Wrong password";
-                        break;
-                    case AuthError.MissingEmail:
-                        failureMessage += "Email is missing";
-                        break;
-                    case AuthError.MissingPassword:
-                        failureMessage += "Password is missing";
-
-                        break;
-                    default:
-                        failureMessage = "Registration Failed";
-                        break;
-                }
-                errorMessage.text = failureMessage;
-            }
-            else
-            {
-                Debug.Log("Registration successful. Welcome" + user.Email);
-
-                // create record in airtable
-
-                UIManager.Instance.OpenLoginView();
-            }
+            uIManager.OpenLoginView();
         }
     }
 
@@ -212,5 +227,10 @@ public class AuthManager : MonoBehaviour
     {
         const string pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).*$";
         return Regex.IsMatch(password, pattern);
+    }
+
+    private void clearInput(InputField field)
+    {
+        field.text = "";
     }
 }
